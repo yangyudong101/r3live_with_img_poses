@@ -1,4 +1,4 @@
-# R3LIVE-2
+# R3LIVE-添加了图像位姿输出
 ## A Robust, Real-time, RGB-colored, LiDAR-Inertial-Visual tightly-coupled state Estimation and mapping package
 
 
