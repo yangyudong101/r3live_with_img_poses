@@ -353,16 +353,33 @@ bool Image_frame::project_3d_point_in_this_img(const vec_3 & in_pt, double &u, d
 
 void Image_frame::dump_pose_and_image(const std::string name_prefix)
 {
-    std::string txt_file_name = std::string(name_prefix).append(".txt");
-    std::string image_file_name = std::string(name_prefix).append(".png");
+    std::string txt_file_name = std::string(name_prefix).append(".cam");// 原本这里写的是txt和png
+    std::string image_file_name = std::string(name_prefix).append(".jpg");
     FILE *fp = fopen(txt_file_name.c_str(), "w+");
+
+    double k1 = -0.1068754857552392, 
+                    k2 = 0.1097791669339744, 
+                    p1 = 1.162506765099679e-05, 
+                    p2 = -0.0002006284386266068, 
+                    p3 = -0.02399406424996586;
+    double ppx = 0.5,
+                    ppy = 0.5, 
+                    w_h = 2048/2448.0;
+
     if (fp)
     {
-        fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf\r\n", m_pose_w2c_q.w(), m_pose_w2c_q.x(), m_pose_w2c_q.y(), m_pose_w2c_q.z(),
-                m_pose_w2c_t(0), m_pose_w2c_t(1), m_pose_w2c_t(2));
+        fprintf(fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n", m_pose_w2c_t(0), m_pose_w2c_t(1), m_pose_w2c_t(2), 
+                m_pose_w2c_R(0, 0), m_pose_w2c_R(0, 1), m_pose_w2c_R(0, 2), 
+                m_pose_w2c_R(1, 0), m_pose_w2c_R(1, 1), m_pose_w2c_R(1, 2), 
+                m_pose_w2c_R(2, 0), m_pose_w2c_R(2, 1), m_pose_w2c_R(2, 2));
+        fprintf(fp, "%lf %lf %lf %lf %lf %lf \n", fx/2432, k1, k2, w_h, ppx, ppy);
         fclose(fp);
     }
     cv::imwrite(image_file_name, m_img);
+    // cout << "Set Image Pose frm [" << image_pose->m_frame_idx << "], pose: " << eigen_q(rot_mat).coeffs().transpose()
+    // << " | " << t_vec.transpose()
+    // << " | " << eigen_q(rot_mat).angularDistance( eigen_q::Identity()) *57.3 << endl;
+    // image_pose->inverse_pose();
 }
 
 int Image_frame::load_pose_and_image(const std::string name_prefix, const double image_scale, int if_load_image)

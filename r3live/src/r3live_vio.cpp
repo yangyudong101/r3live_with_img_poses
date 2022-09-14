@@ -400,6 +400,7 @@ void   R3LIVE::process_image( cv::Mat &temp_img, double msg_time )
     }
 
     if ( m_image_downsample_ratio != 1.0 )
+    // 图像降采样
     {
         cv::resize( temp_img, img_get, cv::Size( m_vio_image_width / m_vio_scale_factor, m_vio_image_heigh / m_vio_scale_factor ) );
     }
@@ -418,6 +419,7 @@ void   R3LIVE::process_image( cv::Mat &temp_img, double msg_time )
     img_pose->init_cubic_interpolation();
     img_pose->image_equalize();
     m_camera_data_mutex.lock();
+    // 相机数据锁
     m_queue_image_with_pose.push_back( img_pose );
     m_camera_data_mutex.unlock();
     total_frame_count++;
@@ -427,6 +429,7 @@ void   R3LIVE::process_image( cv::Mat &temp_img, double msg_time )
         buffer_max_frame = m_queue_image_with_pose.size();
     }
 
+    // 输出图像队列长度
     // cout << "Image queue size = " << m_queue_image_with_pose.size() << endl;
 }
 
@@ -470,6 +473,7 @@ void R3LIVE::load_vio_parameters()
 
 void R3LIVE::set_image_pose( std::shared_ptr< Image_frame > &image_pose, const StatesGroup &state )
 {
+    // StatesGroup记录的是过程中雷达的相关状态参数，IMU到相机的变换矩阵也记录在其中
     mat_3_3 rot_mat = state.rot_end;
     vec_3   t_vec = state.pos_end;
     vec_3   pose_t = rot_mat * state.pos_ext_i2c + t_vec;
@@ -483,6 +487,24 @@ void R3LIVE::set_image_pose( std::shared_ptr< Image_frame > &image_pose, const S
 
     image_pose->m_cam_K << image_pose->fx, 0, image_pose->cx, 0, image_pose->fy, image_pose->cy, 0, 0, 1;
     scope_color( ANSI_COLOR_CYAN_BOLD );
+
+    // auto it=yd_m_map_img_frms.begin();
+    // if(it==yd_m_map_img_frms.end()) cout<<"1111111111111111111111111111111111"<<endl;
+
+    // 显示相机位姿 正确插入位置 保存相机数据
+    if(image_pose->m_frame_idx == 0)
+    {
+        yd_m_map_img_frms.push_back(image_pose);
+    }
+    else if(image_pose->m_frame_idx != yd_m_map_img_frms.back()->m_frame_idx)
+    {
+       yd_m_map_img_frms.push_back(image_pose);
+    }
+    
+    // string img_save_path = "/home/dong/DATA/quanzhou/output/" + std::to_string(image_pose->m_frame_idx);
+    // // std::cout << img_save_path;
+    // image_pose->dump_pose_and_image(img_save_path);
+
     // cout << "Set Image Pose frm [" << image_pose->m_frame_idx << "], pose: " << eigen_q(rot_mat).coeffs().transpose()
     // << " | " << t_vec.transpose()
     // << " | " << eigen_q(rot_mat).angularDistance( eigen_q::Identity()) *57.3 << endl;
@@ -545,7 +567,7 @@ void R3LIVE::publish_track_pts( Rgbmap_tracker &tracker )
     m_pub_visual_tracked_3d_pts.publish( ros_pc_msg );
 }
 
-// ANCHOR - VIO preintegration
+// ANCHOR - VIO preintegration预积分
 bool R3LIVE::vio_preintegration( StatesGroup &state_in, StatesGroup &state_out, double current_frame_time )
 {
     state_out = state_in;
@@ -1074,7 +1096,27 @@ char R3LIVE::cv_keyboard_callback()
     char c = cv_wait_key( 1 );
     // return c;
     if ( c == 's' || c == 'S' )
-    {
+    { 
+        // 按“S”键保存图像帧
+        // yd_m_map_img_frms.save_img_and_pose()
+        cout<<"**************************************"<<endl;
+        cout<<"保存下来的相机帧数为：";
+        cout<<yd_m_map_img_frms.size()<<endl;
+        cout<<"**************************************"<<endl;
+        // auto it=yd_m_map_img_frms.begin();
+        // while (it !=yd_m_map_img_frms.end() )
+        // {
+        //     cout<<it.m_frame_idx<<endl;
+        // }
+        for(int it = 0; it <yd_m_map_img_frms.size(); it++)
+        {
+            // cout<<yd_m_map_img_frms[it]->m_frame_idx<<endl;
+            // 此处调用保存程序
+            string img_save_path = "/home/dong/DATA/quanzhou/output/" + std::to_string(yd_m_map_img_frms[it]->m_frame_idx);
+            yd_m_map_img_frms[it]->inverse_pose();
+            yd_m_map_img_frms[it]->dump_pose_and_image(img_save_path);
+        }
+
         scope_color( ANSI_COLOR_GREEN_BOLD );
         cout << "I capture the keyboard input!!!" << endl;
         m_mvs_recorder.export_to_mvs( m_map_rgb_pts );

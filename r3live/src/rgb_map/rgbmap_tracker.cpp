@@ -292,6 +292,11 @@ void Rgbmap_tracker::track_img( std::shared_ptr< Image_frame > &img_pose, double
     m_map_rgb_pts_in_last_frame_pos = m_map_rgb_pts_in_current_frame_pos;
     update_last_tracking_vector_and_ids();
 
+    // 追踪关键帧，更新了关键帧
+    char save_path[10] = {0};
+    sprintf(save_path, "%d", img_pose->m_frame_idx);
+    img_pose->dump_pose_and_image(save_path);
+
     m_frame_idx++;
     m_last_frame_time = m_current_frame_time;
 }

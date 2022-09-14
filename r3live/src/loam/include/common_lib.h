@@ -313,11 +313,11 @@ struct StatesGroup
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    Eigen::Matrix3d rot_end;                                 // [0-2] the estimated attitude (rotation matrix) at the end lidar point
-    Eigen::Vector3d pos_end;                                 // [3-5] the estimated position at the end lidar point (world frame)
-    Eigen::Vector3d vel_end;                                 // [6-8] the estimated velocity at the end lidar point (world frame)
-    Eigen::Vector3d bias_g;                                  // [9-11] gyroscope bias
-    Eigen::Vector3d bias_a;                                  // [12-14] accelerator bias
+    Eigen::Matrix3d rot_end;                                 // [0-2] the estimated attitude (rotation matrix) at the end lidar point 激光雷达末端点的估计姿态（旋转矩阵）
+    Eigen::Vector3d pos_end;                                 // [3-5] the estimated position at the end lidar point (world frame)结束激光雷达点的估计位置（世界框架）
+    Eigen::Vector3d vel_end;                                 // [6-8] the estimated velocity at the end lidar point (world frame)激光雷达末端的估计速度（世界框架）
+    Eigen::Vector3d bias_g;                                  // [9-11] gyroscope bias陀螺仪偏差
+    Eigen::Vector3d bias_a;                                  // [12-14] accelerator bias加速器偏差
     Eigen::Vector3d gravity;                                 // [15-17] the estimated gravity acceleration
 
     Eigen::Matrix3d rot_ext_i2c;                             // [18-20] Extrinsic between IMU frame to Camera frame on rotation.

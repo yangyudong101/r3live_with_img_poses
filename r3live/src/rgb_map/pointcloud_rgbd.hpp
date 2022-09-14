@@ -137,6 +137,8 @@ class RGB_pts
     }
 };
 using RGB_pt_ptr = std::shared_ptr< RGB_pts >;
+// 图像指针 变量别名
+// using img_frms_ptr = std::shared_ptr< Image_frame >;
 
 class RGB_Voxel
 {
@@ -157,6 +159,8 @@ struct Global_map
     int                                                          m_map_minor_version = R3LIVE_MAP_MINOR_VERSION;
     int                                                          m_if_get_all_pts_in_boxes_using_mp = 1;
     std::vector< RGB_pt_ptr >                    m_rgb_pts_vec;
+    // 添加图像存储容器
+    // std::vector<img_frms_ptr>                   yd_m_img_frms_vec;
     // std::vector< RGB_pt_ptr >                    m_rgb_pts_in_recent_visited_voxels;
     std::shared_ptr< std::vector< RGB_pt_ptr> >                  m_pts_rgb_vec_for_projection = nullptr;
     std::shared_ptr< std::mutex >                                m_mutex_pts_vec;
@@ -197,6 +201,8 @@ struct Global_map
     void selection_points_for_projection( std::shared_ptr< Image_frame > &image_pose, std::vector< std::shared_ptr< RGB_pts > > *pc_out_vec = nullptr,
                                           std::vector< cv::Point2f > *pc_2d_out_vec = nullptr, double minimum_dis = 5, int skip_step = 1,int use_all_pts = 0 );
     void save_to_pcd( std::string dir_name, std::string file_name = std::string( "/rgb_pt" ) , int save_pts_with_views = 3);
+    // 保存图像 dump_img_and_pose已有
+    // void save_img_and_pose();
     void save_and_display_pointcloud( std::string dir_name = std::string( "/home/ziv/temp/" ), std::string file_name = std::string( "/rgb_pt" ) ,  int save_pts_with_views = 3);
     void render_pts_in_voxels( std::shared_ptr< Image_frame > &img_ptr, std::vector< std::shared_ptr< RGB_pts > > &voxels_for_render, double obs_time = 0 );
 

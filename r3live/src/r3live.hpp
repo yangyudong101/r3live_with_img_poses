@@ -246,6 +246,9 @@ public:
     std::list<double> frame_cost_time_vec;
     Rgbmap_tracker op_track;    
     Global_map m_map_rgb_pts;
+    // 添加图像保存
+    // Global_map yd_m_map_img_frms;
+    std::vector<std::shared_ptr<Image_frame>> yd_m_map_img_frms;
     int m_maximum_image_buffer = 2;
     int m_track_windows_size = 50;
     double m_minumum_rgb_pts_size = 0.05;
